@@ -1,0 +1,16 @@
+# macOS
+.DS_Store
+
+# JetBrains
+.idea/
+*.iml
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# 설정
+secrets.py
+EOF
