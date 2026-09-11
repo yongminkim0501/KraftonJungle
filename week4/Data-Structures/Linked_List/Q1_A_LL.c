@@ -11,7 +11,7 @@ Purpose: Implementing the required functions for Question 1 */
 
 //////////////////////////////////////////////////////////////////////////////////
 
-typedef struct _listnode{
+typedef struct _listnode{ // struct는 여러 변수를 묶어서 새로운 자료형처럼 사용하는 문법
 	int item;
 	struct _listnode *next;
 } ListNode;			// You should not change the definition of ListNode
@@ -90,7 +90,49 @@ int main()
 
 int insertSortedLL(LinkedList *ll, int item)
 {
-	/* add your code here */
+    // ll이 구조체 자체가 아닌 구조체를 가리키는 포인터 LinkedList * 이기 때문에 .을 쓰는 것이 불가능함
+    // ll이 주소일 경우 포인터로 멤버에 접근 할 시에는 ->이거를 써야함
+	if (ll -> head == NULL){
+		ListNode *newNode = malloc(sizeof(ListNode)); // ll->head가 노드 자체가 아닌 노드를 가리키는 포인터 ListNode*
+		// ListNode 타입의 newNode의 주소는 ListNode의 사이즈 크기만큼 malloc으로 할당을 받음
+		newNode->item = item; // 포인터 -> 변수 접근 값 item으로 함
+		newNode->next = NULL; // 마찬가지로 포인터 next의 값은 Null
+		ll->head = newNode; // ll 링크드리스트 구조체의 내부 head는 newNode로 가리키게
+		ll->size ++;
+	}else{
+		ListNode *newNode = malloc(sizeof(ListNode));
+		newNode->item = item;
+		newNode->next = NULL;
+		ListNode *curNode = ll->head;
+		ListNode *prevNode = curNode;
+		int count = 0;
+		while(curNode!=NULL){
+			if (newNode->item < ll->head->item){
+				newNode->next = ll->head;
+				ll->head = newNode;
+				ll->size ++;
+				return count;
+			}
+			if (curNode->item < newNode->item){
+				prevNode = curNode;
+				curNode = curNode -> next;
+				count ++;
+			}else if(curNode->item == newNode->item) {
+				free(newNode);
+				return -1;
+			}else{
+				newNode->next = prevNode->next;
+				prevNode->next = newNode;
+				ll->size ++;
+				return count;
+			}
+			if (prevNode -> next == NULL){
+				prevNode->next = newNode;
+				ll->size++;
+				return count;
+			}
+		}
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
