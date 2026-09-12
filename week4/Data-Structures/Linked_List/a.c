@@ -2,12 +2,14 @@
 
 /* CE1007/CZ1007 Data Structures
 Lab Test: Section C - Stack and Queue Questions
-Purpose: Implementing the required functions for Question 5 */
+Purpose: Implementing the required functions for Question 6 */
 
 //////////////////////////////////////////////////////////////////////////////////
 
 #include <stdio.h>
 #include <stdlib.h>
+
+#define MIN_INT -1000
 
 //////////////////////////////////////////////////////////////////////////////////
 
@@ -24,21 +26,20 @@ typedef struct _linkedlist
 } LinkedList;	// You should not change the definition of LinkedList
 
 
-typedef struct _queue
-{
+typedef struct stack{
 	LinkedList ll;
-} Queue;  // You should not change the definition of Queue
+} Stack; // You should not change the definition of stack
 
 ///////////////////////// function prototypes ////////////////////////////////////
 
 // You should not change the prototypes of these functions
-void recursiveReverse(Queue *q);
+void removeUntil(Stack *s, int value);
 
-// You may use the following functions or you may write your own
-void enqueue(Queue *q, int item);
-int dequeue(Queue *q);
-int isEmptyQueue(Queue *q);
-void removeAllItemsFromQueue(Queue *q);
+void push(Stack *s, int item);
+int pop(Stack *s);
+int peek(Stack *s);
+int isEmptyStack(Stack *s);
+void removeAllItemsFromStack(Stack *s);
 
 void printList(LinkedList *ll);
 void removeAllItems(LinkedList *ll);
@@ -51,22 +52,21 @@ int removeNode(LinkedList *ll, int index);
 int main()
 {
 	int c, i;
-	LinkedList ll;
-	Queue q;
-
 	c = 1;
+
+	LinkedList ll;
+	Stack s;
 
 	// Initialize the linked list as an empty linked list
 	ll.head = NULL;
 	ll.size = 0;
 
-	// Initialize the Queue as an empty queue
-	q.ll.head = NULL;
-	q.ll.size = 0;
+	// Initalize the stack as an empty stack
+	s.ll.head = NULL;
+	s.ll.size = 0;
 
-
-	printf("1: Insert an integer into the Queue:\n");
-	printf("2: Recursively reverse the queue;\n");
+	printf("1: Insert an integer into the stack:\n");
+	printf("3: Remove values until the given value;\n");
 	printf("0: Quit:\n");
 
 
@@ -78,21 +78,23 @@ int main()
 		switch (c)
 		{
 		case 1:
-			printf("Input an integer that you want to insert into the queue: ");
+			printf("Input an integer that you want to insert into the stack: ");
 			scanf("%d", &i);
-			enqueue(&q, i);
-			printf("The resulting queue is: ");
-			printList(&q.ll);
+			push(&s, i);
+			printf("The resulting stack is: ");
+			printList(&(s.ll));
 			break;
 		case 2:
-			recursiveReverse(&q); // You need to code this function
-			printf("The resulting reversed queue is: ");
-			printList(&(q.ll));
-			removeAllItemsFromQueue(&q);
+		    printf("Enter an integer value in stack to remove values until that value: ");
+			scanf("%d", &i);
+			removeUntil(&s,i); // You need to code this function
+			printf("The resulting stack after removing values until the given value: ");
+			printList(&(s.ll));
+			removeAllItemsFromStack(&s);
 			removeAllItems(&ll);
 			break;
 		case 0:
-			removeAllItemsFromQueue(&q);
+			removeAllItemsFromStack(&s);
 			removeAllItems(&ll);
 			break;
 		default:
@@ -107,24 +109,23 @@ int main()
 
 ////////////////////////////////////////////////////////////
 
-void recursiveReverse(Queue *q)
+void removeUntil(Stack *s, int value)
 {
 /* add your code here */
 }
 
-//////////////////////////////////////////////////////////////////
-
-void removeAllItemsFromQueue(Queue *q)
-{
-	int count, i;
-	if (q == NULL)
-		return;
-	count = q->ll.size;
-
-	for (i = 0; i < count; i++)
-		dequeue(q);
-}
 //////////////////////////////////////////////////////////////////////////////////
+
+void removeAllItemsFromStack(Stack *s)
+{
+	if (s == NULL)
+		return;
+	while (s->ll.head != NULL)
+	{
+		pop(s);
+	}
+}
+
 
 void removeAllItems(LinkedList *ll)
 {
@@ -140,34 +141,48 @@ void removeAllItems(LinkedList *ll)
 	ll->size = 0;
 }
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
 
-void enqueue(Queue *q, int item) {
-	insertNode(&(q->ll), q->ll.size, item);
+void push(Stack *s, int item)
+{
+	insertNode(&(s->ll), 0, item);
 }
 
-int dequeue(Queue *q) {
+int pop(Stack *s)
+{
 	int item;
-
-	if (!isEmptyQueue(q)) {
-		item = ((q->ll).head)->item;
-		removeNode(&(q->ll), 0);
+	if (s->ll.head != NULL)
+	{
+		item = ((s->ll).head)->item;
+		removeNode(&(s->ll), 0);
 		return item;
 	}
-	return -1;
+	else
+		return MIN_INT;
 }
 
-int isEmptyQueue(Queue *q) {
-	if ((q->ll).size == 0)
-		return 1;
-	return 0;
+int peek(Stack *s){
+    if(isEmptyStack(s))
+        return MIN_INT;
+    else
+        return ((s->ll).head)->item;
 }
+
+int isEmptyStack(Stack *s)
+{
+	if ((s->ll).size == 0)
+		return 1;
+	else
+		return 0;
+}
+
 
 void printList(LinkedList *ll){
 
 	ListNode *cur;
 	if (ll == NULL)
 		return;
+
 	cur = ll->head;
 	if (cur == NULL)
 		printf("Empty");
