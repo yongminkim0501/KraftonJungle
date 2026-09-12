@@ -90,9 +90,15 @@ void RecursiveReverse(ListNode **ptrHead)
 	// 무조건 재귀로 구현해야함
 	ListNode *firstNode = *ptrHead;
 	ListNode *lastNode = firstNode->next;
+
 	if (lastNode == NULL) return;
 	RecursiveReverse(&lastNode);
 	firstNode -> next -> next = firstNode; // 내 다음 노드의 연결 노드는 내가 되어야 함
+	//A: first=1, rest=2   ...대기
+	//   B: first=2, rest=3   ...대기
+	//     C: first=3, rest=4   ...대기
+	//       D: first=4, rest=NULL → 즉시 return
+	// 이후 올라오면서 실행
 	firstNode -> next = NULL;
 	*ptrHead = lastNode;
 }
