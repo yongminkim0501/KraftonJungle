@@ -1,8 +1,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 /* CE1007/CZ1007 Data Structures
-Lab Test: Section A - Linked List Questions
-Purpose: Implementing the required functions for Question 6 */
+Lab Test: Section C - Stack and Queue Questions
+Purpose: Implementing the required functions for Question 1 */
 
 //////////////////////////////////////////////////////////////////////////////////
 
@@ -15,83 +15,167 @@ typedef struct _listnode
 {
 	int item;
 	struct _listnode *next;
-} ListNode;			// You should not change the definition of ListNode
+} ListNode;	// You should not change the definition of ListNode
 
 typedef struct _linkedlist
 {
 	int size;
 	ListNode *head;
-} LinkedList;			// You should not change the definition of LinkedList
+} LinkedList;	// You should not change the definition of LinkedList
 
 
-//////////////////////// function prototypes /////////////////////////////////////
+typedef struct _queue
+{
+	LinkedList ll;
+} Queue;  // You should not change the definition of Queue
 
-// You should not change the prototype of this function
-int moveMaxToFront(ListNode **ptrHead);
+///////////////////////// function prototypes ////////////////////////////////////
+
+// You should not change the prototypes of these functions
+void createQueueFromLinkedList(LinkedList *ll, Queue *q);
+void removeOddValues(Queue *q);
+
+void enqueue(Queue *q, int item);
+int dequeue(Queue *q);
+int isEmptyQueue(Queue *q);
+void removeAllItemsFromQueue(Queue *q);
 
 void printList(LinkedList *ll);
-void removeAllItems(LinkedList *ll);
 ListNode * findNode(LinkedList *ll, int index);
 int insertNode(LinkedList *ll, int index, int value);
 int removeNode(LinkedList *ll, int index);
-
+void removeAllItems(LinkedList *ll);
 
 //////////////////////////// main() //////////////////////////////////////////////
 
 int main()
 {
-	int c, i, j;
+	int c, i;
+	LinkedList ll;
+	Queue q;
+
 	c = 1;
 
-	LinkedList ll;
-	//Initialize the linked list 1 as an empty linked list
+	// Initialize the linked list as an empty linked list
 	ll.head = NULL;
 	ll.size = 0;
 
+	// Initialize the Queue as an empty queue
+	q.ll.head = NULL;
+	q.ll.size = 0;
 
-	printf("1: Insert an integer to the linked list:\n");
-	printf("2: Move the largest stored value to the front of the list:\n");
+
+	printf("1: Insert an integer into the linked list:\n");
+	printf("2: Create the queue from the linked list:\n");
+	printf("3: Remove odd numbers from the queue:\n");
 	printf("0: Quit:\n");
+
 
 	while (c != 0)
 	{
-		printf("Please input your choice(1/2/0): ");
+		printf("Please input your choice(1/2/3/0): ");
 		scanf("%d", &c);
 
 		switch (c)
 		{
 		case 1:
-			printf("Input an integer that you want to add to the linked list: ");
+			printf("Input an integer that you want to insert into the List: ");
 			scanf("%d", &i);
-			j=insertNode(&ll, ll.size, i);
+			insertNode(&ll, ll.size, i);
 			printf("The resulting linked list is: ");
 			printList(&ll);
 			break;
 		case 2:
-			moveMaxToFront(&(ll.head));  // You need to code this function
-			printf("The resulting linked list after moving largest stored value to the front of the list is: ");
-			printList(&ll);
+			createQueueFromLinkedList(&ll, &q); // You need to code this function
+			printf("The resulting queue is: ");
+			printList(&(q.ll));
+			break;
+		case 3:
+			removeOddValues(&q); // You need to code this function
+			printf("The resulting queue after removing odd integers is: ");
+			printList(&(q.ll));
+			removeAllItemsFromQueue(&q);
 			removeAllItems(&ll);
 			break;
 		case 0:
+			removeAllItemsFromQueue(&q);
 			removeAllItems(&ll);
 			break;
 		default:
 			printf("Choice unknown;\n");
 			break;
 		}
+
 	}
+
 	return 0;
 }
 
-////////////////////////////////////////////////////////////////////////
 
-int moveMaxToFront(ListNode **ptrHead)
+//////////////////////////////////////////////////////////////////////////////////
+
+void createQueueFromLinkedList(LinkedList *ll, Queue *q)
 {
-    /* add your code here */
+	// 연결리스트에 들어있는 정수 전부를 큐에 넣는다
+	// 넣는 순서는 리스트의 첫 노드부터 마지막 노드까지 순차적으로
+	// 함수 시작 시 큐가 비어있지 않다면 먼저 비운다
+	if (!isEmptyQueue(q)){
+		removeAllItemsFromQueue(q);
+	}
+	ListNode *curNode = ll->head;
+	while (curNode!=NULL){
+		enqueue(q, curNode->item);
+		curNode=curNode->next;
+	}
+}
+
+void removeOddValues(Queue *q)
+{
+	LinkedList *tempLl = &(q -> ll);
+	int count = tempLl -> size;
+
+	ListNode *curNode = tempLl->head;
+	for (int i=0; i<count; i++){
+		if ((curNode->item)%2!=0){
+			removeNode(&tempLl, i);
+		}
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////////////
+
+void enqueue(Queue *q, int item) {
+	insertNode(&(q->ll), q->ll.size, item);
+}
+
+int dequeue(Queue *q) {
+	int item;
+
+	if (!isEmptyQueue(q)) {
+		item = ((q->ll).head)->item;
+		removeNode(&(q->ll), 0);
+		return item;
+	}
+	return -1;
+}
+
+int isEmptyQueue(Queue *q) {
+	if ((q->ll).size == 0)
+		return 1;
+	return 0;
+}
+
+void removeAllItemsFromQueue(Queue *q)
+{
+	int count, i;
+	if (q == NULL)
+		return;
+	count = q->ll.size;
+
+	for (i = 0; i < count; i++)
+		dequeue(q);
+}
+
 
 void printList(LinkedList *ll){
 
@@ -99,7 +183,6 @@ void printList(LinkedList *ll){
 	if (ll == NULL)
 		return;
 	cur = ll->head;
-
 	if (cur == NULL)
 		printf("Empty");
 	while (cur != NULL)
@@ -109,6 +192,22 @@ void printList(LinkedList *ll){
 	}
 	printf("\n");
 }
+
+
+void removeAllItems(LinkedList *ll)
+{
+	ListNode *cur = ll->head;
+	ListNode *tmp;
+
+	while (cur != NULL){
+		tmp = cur->next;
+		free(cur);
+		cur = tmp;
+	}
+	ll->head = NULL;
+	ll->size = 0;
+}
+
 
 ListNode * findNode(LinkedList *ll, int index){
 
@@ -143,6 +242,10 @@ int insertNode(LinkedList *ll, int index, int value){
 	if (ll->head == NULL || index == 0){
 		cur = ll->head;
 		ll->head = malloc(sizeof(ListNode));
+		if (ll->head == NULL)
+		{
+			exit(0);
+		}
 		ll->head->item = value;
 		ll->head->next = cur;
 		ll->size++;
@@ -155,6 +258,10 @@ int insertNode(LinkedList *ll, int index, int value){
 	if ((pre = findNode(ll, index - 1)) != NULL){
 		cur = pre->next;
 		pre->next = malloc(sizeof(ListNode));
+		if (pre->next == NULL)
+		{
+			exit(0);
+		}
 		pre->next->item = value;
 		pre->next->next = cur;
 		ll->size++;
@@ -179,7 +286,6 @@ int removeNode(LinkedList *ll, int index){
 		free(ll->head);
 		ll->head = cur;
 		ll->size--;
-
 		return 0;
 	}
 
@@ -198,18 +304,4 @@ int removeNode(LinkedList *ll, int index){
 	}
 
 	return -1;
-}
-
-void removeAllItems(LinkedList *ll)
-{
-	ListNode *cur = ll->head;
-	ListNode *tmp;
-
-	while (cur != NULL){
-		tmp = cur->next;
-		free(cur);
-		cur = tmp;
-	}
-	ll->head = NULL;
-	ll->size = 0;
 }
