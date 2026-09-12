@@ -2,13 +2,14 @@
 
 /* CE1007/CZ1007 Data Structures
 Lab Test: Section C - Stack and Queue Questions
-Purpose: Implementing the required functions for Question 1 */
+Purpose: Implementing the required functions for Question 2 */
 
 //////////////////////////////////////////////////////////////////////////////////
 
 #include <stdio.h>
 #include <stdlib.h>
 
+#define MIN_INT -1000
 //////////////////////////////////////////////////////////////////////////////////
 
 typedef struct _listnode
@@ -23,22 +24,21 @@ typedef struct _linkedlist
 	ListNode *head;
 } LinkedList;	// You should not change the definition of LinkedList
 
-
-typedef struct _queue
+typedef struct _stack
 {
 	LinkedList ll;
-} Queue;  // You should not change the definition of Queue
+}Stack;  // You should not change the definition of Stack
 
 ///////////////////////// function prototypes ////////////////////////////////////
 
 // You should not change the prototypes of these functions
-void createQueueFromLinkedList(LinkedList *ll, Queue *q);
-void removeOddValues(Queue *q);
+void createStackFromLinkedList(LinkedList *ll , Stack *stack);
+void removeEvenValues(Stack *s);
 
-void enqueue(Queue *q, int item);
-int dequeue(Queue *q);
-int isEmptyQueue(Queue *q);
-void removeAllItemsFromQueue(Queue *q);
+void push(Stack *s , int item);
+int pop(Stack *s);
+int isEmptyStack(Stack *s);
+void removeAllItemsFromStack(Stack *s);
 
 void printList(LinkedList *ll);
 ListNode * findNode(LinkedList *ll, int index);
@@ -52,24 +52,21 @@ int main()
 {
 	int c, i;
 	LinkedList ll;
-	Queue q;
+	Stack s;
 
 	c = 1;
-
 	// Initialize the linked list as an empty linked list
 	ll.head = NULL;
 	ll.size = 0;
 
-	// Initialize the Queue as an empty queue
-	q.ll.head = NULL;
-	q.ll.size = 0;
-
+	// Initalize the stack as an empty stack
+	s.ll.head = NULL;
+	s.ll.size = 0;
 
 	printf("1: Insert an integer into the linked list:\n");
-	printf("2: Create the queue from the linked list:\n");
-	printf("3: Remove odd numbers from the queue:\n");
+	printf("2: Create the stack from the linked list:\n");
+	printf("3: Remove even numbers from the stack:\n");
 	printf("0: Quit:\n");
-
 
 	while (c != 0)
 	{
@@ -79,26 +76,26 @@ int main()
 		switch (c)
 		{
 		case 1:
-			printf("Input an integer that you want to insert into the List: ");
+			printf("Input an integer that you want to add to the linked list: ");
 			scanf("%d", &i);
 			insertNode(&ll, ll.size, i);
 			printf("The resulting linked list is: ");
 			printList(&ll);
 			break;
 		case 2:
-			createQueueFromLinkedList(&ll, &q); // You need to code this function
-			printf("The resulting queue is: ");
-			printList(&(q.ll));
+			createStackFromLinkedList(&ll, &s); // You need to code this function
+			printf("The resulting stack is: ");
+			printList(&(s.ll));
 			break;
 		case 3:
-			removeOddValues(&q); // You need to code this function
-			printf("The resulting queue after removing odd integers is: ");
-			printList(&(q.ll));
-			removeAllItemsFromQueue(&q);
+			removeEvenValues(&s); // You need to code this function
+			printf("The resulting stack after removing even integers is: ");
+			printList(&(s.ll));
+			removeAllItemsFromStack(&s);
 			removeAllItems(&ll);
 			break;
 		case 0:
-			removeAllItemsFromQueue(&q);
+			removeAllItemsFromStack(&s);
 			removeAllItems(&ll);
 			break;
 		default:
@@ -114,67 +111,56 @@ int main()
 
 //////////////////////////////////////////////////////////////////////////////////
 
-void createQueueFromLinkedList(LinkedList *ll, Queue *q)
+void createStackFromLinkedList(LinkedList *ll, Stack *s)
 {
-	// 연결리스트에 들어있는 정수 전부를 큐에 넣는다
-	// 넣는 순서는 리스트의 첫 노드부터 마지막 노드까지 순차적으로
-	// 함수 시작 시 큐가 비어있지 않다면 먼저 비운다
-	if (!isEmptyQueue(q)){
-		removeAllItemsFromQueue(q);
-	}
-	ListNode *curNode = ll->head;
-	while (curNode!=NULL){
-		enqueue(q, curNode->item);
-		curNode=curNode->next;
-	}
+    
 }
 
-void removeOddValues(Queue *q)
+void removeEvenValues(Stack *s)
 {
-	LinkedList *tempLl = &(q -> ll);
-	int count = tempLl -> size;
-
-	ListNode *curNode = tempLl->head;
-	for (int i=0; i<count; i++){
-		if ((curNode->item)%2!=0){
-			removeNode(&tempLl, i);
-		}
-	}
+	/* add your code here */
 }
 
 //////////////////////////////////////////////////////////////////////////////////
 
-void enqueue(Queue *q, int item) {
-	insertNode(&(q->ll), q->ll.size, item);
+void push(Stack *s, int item)
+{
+	insertNode(&(s->ll), 0, item);
 }
 
-int dequeue(Queue *q) {
+int pop(Stack *s)
+{
 	int item;
-
-	if (!isEmptyQueue(q)) {
-		item = ((q->ll).head)->item;
-		removeNode(&(q->ll), 0);
+	if (s->ll.head != NULL)
+	{
+		item = ((s->ll).head)->item;
+		removeNode(&(s->ll), 0);
 		return item;
 	}
-	return -1;
+	else
+		return MIN_INT;
 }
 
-int isEmptyQueue(Queue *q) {
-	if ((q->ll).size == 0)
-		return 1;
-	return 0;
-}
-
-void removeAllItemsFromQueue(Queue *q)
+int isEmptyStack(Stack *s)
 {
-	int count, i;
-	if (q == NULL)
-		return;
-	count = q->ll.size;
-
-	for (i = 0; i < count; i++)
-		dequeue(q);
+	if ((s->ll).size == 0)
+		return 1;
+	else
+		return 0;
 }
+
+
+void removeAllItemsFromStack(Stack *s)
+{
+	if (s == NULL)
+		return;
+	while (s->ll.head != NULL)
+	{
+		pop(s);
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
 
 
 void printList(LinkedList *ll){
