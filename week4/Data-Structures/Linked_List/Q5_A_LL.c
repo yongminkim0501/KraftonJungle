@@ -39,6 +39,8 @@ int removeNode(LinkedList *ll, int index);
 int main()
 {
 	int c, i;
+	c = 1;
+	i = 0;
 	LinkedList ll;
 	LinkedList resultFrontList, resultBackList;
 
@@ -102,7 +104,24 @@ int main()
 
 void frontBackSplitLinkedList(LinkedList *ll, LinkedList *resultFrontList, LinkedList *resultBackList)
 {
-	/* add your code here */
+	// 개수가 홀수라면 남은 하나를 front에 넣는 것
+	// 원소가 n개일 때는 front는 (n+1)/2개, back은 나머지
+	// 2 3 5 6 7
+	// front : 2 3 5, back : 6 7
+	int count = (ll->size);
+	int j = 0;
+	ListNode *curNode = ll->head;
+
+	for (int i = 0; i<count; i++){
+		if (i <= (count / 2)){
+			insertNode(resultFrontList, i, curNode->item);		
+		}else{
+			insertNode(resultBackList, j, curNode->item);
+			j+=1;
+		}
+		curNode = curNode->next;
+	}
+	
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
