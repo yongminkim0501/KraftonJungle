@@ -2,43 +2,42 @@
 
 /* CE1007/CZ1007 Data Structures
 Lab Test: Section C - Stack and Queue Questions
-Purpose: Implementing the required functions for Question 2 */
+Purpose: Implementing the required functions for Question 3 */
 
 //////////////////////////////////////////////////////////////////////////////////
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <limits.h>
 
-#define MIN_INT -1000
-//////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////   linked list /////////////////////////////////
 
-typedef struct _listnode
-{
-	int item;
-	struct _listnode *next;
-} ListNode;	// You should not change the definition of ListNode
+typedef struct _listnode{
+   int item;
+   struct _listnode *next;
+} ListNode;
 
-typedef struct _linkedlist
-{
-	int size;
-	ListNode *head;
-} LinkedList;	// You should not change the definition of LinkedList
+typedef struct _linkedlist{
+   int size;
+   ListNode *head;
+   ListNode *tail;
+} LinkedList;
 
-typedef struct _stack
-{
+////////////////////////////////// stack //////////////////////////////////////////
+
+typedef struct stack{
 	LinkedList ll;
-}Stack;  // You should not change the definition of Stack
+} Stack;
 
-///////////////////////// function prototypes ////////////////////////////////////
+////////////////////////// function prototypes ////////////////////////////////////
 
 // You should not change the prototypes of these functions
-void createStackFromLinkedList(LinkedList *ll , Stack *stack);
-void removeEvenValues(Stack *s);
+int isStackPairwiseConsecutive(Stack *s);
 
-void push(Stack *s , int item);
+void push(Stack *s, int item);
 int pop(Stack *s);
+int peek(Stack *s);
 int isEmptyStack(Stack *s);
-void removeAllItemsFromStack(Stack *s);
 
 void printList(LinkedList *ll);
 ListNode * findNode(LinkedList *ll, int index);
@@ -46,122 +45,94 @@ int insertNode(LinkedList *ll, int index, int value);
 int removeNode(LinkedList *ll, int index);
 void removeAllItems(LinkedList *ll);
 
-//////////////////////////// main() //////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////
 
 int main()
 {
-	int c, i;
-	LinkedList ll;
-	Stack s;
+    int c, value;
 
-	c = 1;
-	// Initialize the linked list as an empty linked list
-	ll.head = NULL;
-	ll.size = 0;
+    Stack s;
 
-	// Initalize the stack as an empty stack
-	s.ll.head = NULL;
-	s.ll.size = 0;
+    s.ll.head=NULL;
+	s.ll.size =0;
+	s.ll.tail =NULL;
 
-	printf("1: Insert an integer into the linked list:\n");
-	printf("2: Create the stack from the linked list:\n");
-	printf("3: Remove even numbers from the stack:\n");
-	printf("0: Quit:\n");
+    c =1;
 
-	while (c != 0)
+    printf("1: Insert an integer into the stack:\n");
+    printf("2: Check the stack is pairwise consecutive:\n");
+    printf("0: Quit:\n");
+
+    while (c != 0)
 	{
-		printf("Please input your choice(1/2/3/0): ");
+		printf("Please input your choice(1/2/0): ");
 		scanf("%d", &c);
 
 		switch (c)
 		{
 		case 1:
-			printf("Input an integer that you want to add to the linked list: ");
-			scanf("%d", &i);
-			insertNode(&ll, ll.size, i);
-			printf("The resulting linked list is: ");
-			printList(&ll);
+			printf("Input an integer that you want to insert into the stack: ");
+			scanf("%d", &value);
+			push(&s, value);
+			printf("The stack is: ");
+            printList(&(s.ll));
 			break;
 		case 2:
-			createStackFromLinkedList(&ll, &s); // You need to code this function
-			printf("The resulting stack is: ");
-			printList(&(s.ll));
-			break;
-		case 3:
-			removeEvenValues(&s); // You need to code this function
-			printf("The resulting stack after removing even integers is: ");
-			printList(&(s.ll));
-			removeAllItemsFromStack(&s);
-			removeAllItems(&ll);
-			break;
+            if(isStackPairwiseConsecutive(&s))
+            {
+                printf("The stack is pairwise consecutive.\n");
+            }
+            else{
+                printf("The stack is not pairwise consecutive.\n");
+            }
+            removeAllItems(&(s.ll));
+            break;
 		case 0:
-			removeAllItemsFromStack(&s);
-			removeAllItems(&ll);
+			removeAllItems(&(s.ll));
 			break;
 		default:
 			printf("Choice unknown;\n");
 			break;
 		}
-
 	}
 
-	return 0;
+    return 0;
 }
 
+/////////////////////////////////////////////////////////////////////////////////
 
-//////////////////////////////////////////////////////////////////////////////////
-
-void createStackFromLinkedList(LinkedList *ll, Stack *s)
+int isStackPairwiseConsecutive(Stack *s)
 {
-    
-}
-
-void removeEvenValues(Stack *s)
-{
-	/* add your code here */
+  /* add your code here */
 }
 
 //////////////////////////////////////////////////////////////////////////////////
 
-void push(Stack *s, int item)
-{
-	insertNode(&(s->ll), 0, item);
+void push(Stack *s, int item){
+   insertNode(&(s->ll), 0, item);
 }
 
-int pop(Stack *s)
-{
-	int item;
-	if (s->ll.head != NULL)
-	{
-		item = ((s->ll).head)->item;
-		removeNode(&(s->ll), 0);
-		return item;
-	}
-	else
-		return MIN_INT;
+int pop(Stack *s){
+   int item;
+   if(!isEmptyStack(s)){
+    item = ((s->ll).head)->item;
+    removeNode(&(s->ll), 0);
+    return item;
+   }
+    return INT_MIN;
 }
 
-int isEmptyStack(Stack *s)
-{
-	if ((s->ll).size == 0)
-		return 1;
-	else
-		return 0;
+int peek(Stack *s){
+   return ((s->ll).head)->item;
 }
 
-
-void removeAllItemsFromStack(Stack *s)
-{
-	if (s == NULL)
-		return;
-	while (s->ll.head != NULL)
-	{
-		pop(s);
-	}
+int isEmptyStack(Stack *s){
+   if ((s->ll).size == 0)
+      return 1;
+   return 0;
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////
-
+//////////////////////////////////////////////////////////////////////////////////
 
 void printList(LinkedList *ll){
 
@@ -169,6 +140,7 @@ void printList(LinkedList *ll){
 	if (ll == NULL)
 		return;
 	cur = ll->head;
+
 	if (cur == NULL)
 		printf("Empty");
 	while (cur != NULL)
@@ -178,22 +150,6 @@ void printList(LinkedList *ll){
 	}
 	printf("\n");
 }
-
-
-void removeAllItems(LinkedList *ll)
-{
-	ListNode *cur = ll->head;
-	ListNode *tmp;
-
-	while (cur != NULL){
-		tmp = cur->next;
-		free(cur);
-		cur = tmp;
-	}
-	ll->head = NULL;
-	ll->size = 0;
-}
-
 
 ListNode * findNode(LinkedList *ll, int index){
 
@@ -228,10 +184,6 @@ int insertNode(LinkedList *ll, int index, int value){
 	if (ll->head == NULL || index == 0){
 		cur = ll->head;
 		ll->head = malloc(sizeof(ListNode));
-		if (ll->head == NULL)
-		{
-			exit(0);
-		}
 		ll->head->item = value;
 		ll->head->next = cur;
 		ll->size++;
@@ -244,10 +196,6 @@ int insertNode(LinkedList *ll, int index, int value){
 	if ((pre = findNode(ll, index - 1)) != NULL){
 		cur = pre->next;
 		pre->next = malloc(sizeof(ListNode));
-		if (pre->next == NULL)
-		{
-			exit(0);
-		}
 		pre->next->item = value;
 		pre->next->next = cur;
 		ll->size++;
@@ -272,6 +220,7 @@ int removeNode(LinkedList *ll, int index){
 		free(ll->head);
 		ll->head = cur;
 		ll->size--;
+
 		return 0;
 	}
 
@@ -290,4 +239,18 @@ int removeNode(LinkedList *ll, int index){
 	}
 
 	return -1;
+}
+
+void removeAllItems(LinkedList *ll)
+{
+	ListNode *cur = ll->head;
+	ListNode *tmp;
+
+	while (cur != NULL){
+		tmp = cur->next;
+		free(cur);
+		cur = tmp;
+	}
+	ll->head = NULL;
+	ll->size = 0;
 }

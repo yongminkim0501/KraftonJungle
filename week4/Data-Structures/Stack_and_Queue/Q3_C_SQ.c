@@ -104,6 +104,23 @@ int main()
 int isStackPairwiseConsecutive(Stack *s)
 {
   /* add your code here */
+  LinkedList *tempList = &(s->ll);
+  int count = tempList->size;
+  if (count % 2 != 0) {
+	return 0;
+  }
+  if (count == 0){
+	return 1;
+  }
+  int pairCount = count / 2;
+  for (int i = 0; i<pairCount; i++){
+	int fData = pop(s);
+	int sData = pop(s);
+	if (abs(fData - sData) != 1){
+		return 0;
+	}
+  }
+  return 1;
 }
 
 //////////////////////////////////////////////////////////////////////////////////
