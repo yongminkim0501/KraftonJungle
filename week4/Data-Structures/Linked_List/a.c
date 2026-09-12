@@ -2,7 +2,7 @@
 
 /* CE1007/CZ1007 Data Structures
 Lab Test: Section C - Stack and Queue Questions
-Purpose: Implementing the required functions for Question 3 */
+Purpose: Implementing the required functions for Question 4 */
 
 //////////////////////////////////////////////////////////////////////////////////
 
@@ -23,45 +23,58 @@ typedef struct _linkedlist{
    ListNode *tail;
 } LinkedList;
 
-////////////////////////////////// stack //////////////////////////////////////////
+////////////////////////////////// stack    ///////////////////////////////////////////////////////
 
 typedef struct stack{
 	LinkedList ll;
 } Stack;
 
-////////////////////////// function prototypes ////////////////////////////////////
+//////////////////////////////////// queue ////////////////////////////////////////////////////////
+
+typedef struct _queue{
+	LinkedList ll;
+} Queue;
+
+///////////////////////// function prototypes ////////////////////////////////////
 
 // You should not change the prototypes of these functions
-int isStackPairwiseConsecutive(Stack *s);
+void reverse(Queue *q);
 
 void push(Stack *s, int item);
 int pop(Stack *s);
 int peek(Stack *s);
 int isEmptyStack(Stack *s);
 
+void enqueue(Queue *q, int item);
+int dequeue(Queue *q);
+int isEmptyQueue(Queue *s);
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
 void printList(LinkedList *ll);
 ListNode * findNode(LinkedList *ll, int index);
 int insertNode(LinkedList *ll, int index, int value);
 int removeNode(LinkedList *ll, int index);
 void removeAllItems(LinkedList *ll);
 
-//////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 int main()
 {
     int c, value;
 
-    Stack s;
+    Queue q;
 
-    s.ll.head=NULL;
-	s.ll.size =0;
-	s.ll.tail =NULL;
+    //initialize the queue
+	q.ll.head =NULL;
+	q.ll.size =0;
+	q.ll.tail=NULL;
 
     c =1;
 
-    printf("1: Insert an integer into the stack:\n");
-    printf("2: Check the stack is pairwise consecutive:\n");
-    printf("0: Quit:\n");
+    printf("1: Insert an integer into the queue;\n");
+    printf("2: Reverse the queue;\n");
+    printf("0: Quit;\n");
 
     while (c != 0)
 	{
@@ -71,24 +84,20 @@ int main()
 		switch (c)
 		{
 		case 1:
-			printf("Input an integer that you want to insert into the stack: ");
+			printf("Input an integer that you want to insert into the queue: ");
 			scanf("%d", &value);
-			push(&s, value);
-			printf("The stack is: ");
-            printList(&(s.ll));
+			enqueue(&q, value);
+			printf("The queue is: ");
+			printList(&(q.ll));
 			break;
 		case 2:
-            if(isStackPairwiseConsecutive(&s))
-            {
-                printf("The stack is pairwise consecutive.\n");
-            }
-            else{
-                printf("The stack is not pairwise consecutive.\n");
-            }
-            removeAllItems(&(s.ll));
-            break;
+			reverse(&q); // You need to code this function
+			printf("The resulting queue after reversing its elements is: ");
+			printList(&(q.ll));
+			removeAllItems(&(q.ll));
+			break;
 		case 0:
-			removeAllItems(&(s.ll));
+			removeAllItems(&(q.ll));
 			break;
 		default:
 			printf("Choice unknown;\n");
@@ -99,14 +108,19 @@ int main()
     return 0;
 }
 
-/////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////
 
-int isStackPairwiseConsecutive(Stack *s)
+void reverse(Queue *q)
 {
-  /* add your code here */
+	Stack s = malloc(sizeof(Stack));
+	
+	while(q){
+		int temp_data = dequeue(q);
+		temp_data
+	}
 }
 
-//////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////
 
 void push(Stack *s, int item){
    insertNode(&(s->ll), 0, item);
@@ -128,6 +142,23 @@ int peek(Stack *s){
 
 int isEmptyStack(Stack *s){
    if ((s->ll).size == 0)
+      return 1;
+   return 0;
+}
+
+void enqueue(Queue *q, int item){
+   insertNode(&(q->ll), q->ll.size, item);
+}
+
+int dequeue(Queue *q){
+   int item;
+   item = ((q->ll).head)->item;
+   removeNode(&(q->ll), 0);
+   return item;
+}
+
+int isEmptyQueue(Queue *q){
+   if ((q->ll).size == 0)
       return 1;
    return 0;
 }
