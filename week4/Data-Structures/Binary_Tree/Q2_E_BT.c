@@ -97,7 +97,25 @@ int main()
 int maxHeight(BTNode *node)
 
 {
-    /* add your code here */
+    // 구해야 하는 것 루트에서 가장 먼 리프까지 내려갈 때 지나는 선의 개수
+    //빈 트리 = -1
+    //노드 하나짜리 트리 = 0
+    // figure 2의 3층 트리 = 2
+    // 노드의 수를 세는 것이 아닌 간선의 개수를 세야함(깊이?)
+    BTNode *curNode = node;
+    int height;
+    if (!curNode) return -1; // 해당 노드가 비었음
+    
+    int rightCheck = maxHeight(curNode->right);
+    int leftCheck = maxHeight(curNode->left);
+
+    if (rightCheck < leftCheck){
+        height = leftCheck+1;
+    }else{
+        height = rightCheck+1;
+    }
+
+    return height;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
