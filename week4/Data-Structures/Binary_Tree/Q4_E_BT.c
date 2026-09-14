@@ -101,9 +101,22 @@ int main()
 //////////////////////////////////////////////////////////////////////////////////
 
 int sumOfOddNodes(BTNode *node)
-
 {
-    /* add your code here */
+    BTNode *curNode = node;
+    int count, leftCount, rightCount;
+    if (!(curNode)) return 0;
+    
+    if ((curNode->item)%2 != 0){
+        leftCount = sumOfOddNodes(curNode->left);
+        rightCount = sumOfOddNodes(curNode->right);
+        count = leftCount + rightCount + curNode->item;
+    }
+    else{
+        leftCount = sumOfOddNodes(curNode->left);
+        rightCount = sumOfOddNodes(curNode->right);
+        count = leftCount + rightCount;
+    }
+    return count;
 }
 
 //////////////////////////////////////////////////////////////////////////////////

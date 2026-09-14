@@ -2,7 +2,7 @@
 
 /* CE1007/CZ1007 Data Structures
 Lab Test: Section E - Binary Trees Questions
-Purpose: Implementing the required functions for Question 3 */
+Purpose: Implementing the required functions for Question 4 */
 
 //////////////////////////////////////////////////////////////////////////////////
 
@@ -10,6 +10,7 @@ Purpose: Implementing the required functions for Question 3 */
 #include <stdlib.h>
 
 //////////////////////////////////////////////////////////////////////////////////
+
 typedef struct _btnode
 {
     int item;
@@ -30,10 +31,11 @@ typedef struct _stack
     StackNode *top;
 } Stack;
 
-///////////////////////// function prototypes ////////////////////////////////////
+
+///////////////////////// Function prototypes ////////////////////////////////////
 
 // You should not change the prototypes of these functions
-int countOneChildNodes(BTNode *node);
+int sumOfOddNodes(BTNode *root);
 
 BTNode *createBTNode(int item);
 
@@ -49,15 +51,15 @@ void removeAll(BTNode **node);
 int main()
 {
     char e;
-    int c,s;
+    int c,oddValueCount;
     BTNode *root;
 
     c = 1;
+    oddValueCount = 0;
     root = NULL;
 
-
     printf("1: Create a binary tree.\n");
-    printf("2: Count the number of nodes that have exactly one child node.\n");
+    printf("2: Find the sum of all odd numbers in the binary tree.\n");
     printf("0: Quit;\n");
 
     while(c != 0)
@@ -75,8 +77,8 @@ int main()
                 printf("\n");
                 break;
             case 2:
-                s = countOneChildNodes(root);
-                printf("The number of nodes that have exactly one child node is: %d.\n", s);
+                oddValueCount = sumOfOddNodes(root);
+                printf("The sum of all odd numbers in the binary tree is: %d.\n",oddValueCount);
                 removeAll(&root);
                 break;
             case 0:
@@ -98,30 +100,13 @@ int main()
 
 //////////////////////////////////////////////////////////////////////////////////
 
-int countOneChildNodes(BTNode *node)
+int sumOfOddNodes(BTNode *node)
 
 {
-    BTNode *curNode = node;
-    int count;
-    if (!(curNode)) return 0;
-    if (!(curNode->left)&&!(curNode->right)){
-        return 0;
-    }else{
-        if((curNode->left)&&(curNode->right)){
-            count = countOneChildNodes(curNode->right);
-            count = countOneChildNodes(curNode->left);
-        }
-        else if (!(curNode->left)&&(curNode->right)){
-            count = countOneChildNodes(curNode->right)+1;
-        }
-        else if(!(curNode->right)&&(curNode->left)){
-            count = countOneChildNodes(curNode->left)+1;
-        }
-    }
-    return count;
+    /* add your code here */
 }
 
-///////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
 
 BTNode *createBTNode(int item)
 {
