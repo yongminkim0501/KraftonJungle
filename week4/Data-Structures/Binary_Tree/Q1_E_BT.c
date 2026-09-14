@@ -114,11 +114,28 @@ int main()
 //////////////////////////////////////////////////////////////////////////////////
 
 int identical(BTNode *tree1, BTNode *tree2)
-
 {
-   /* add your code here */
-}
+    if (!tree1 && !tree2){
+        return 1;
+    }
+    if ((!tree1 && tree2) || (tree1 && !tree2)){
+        return 0;
+    }
 
+    if (tree1->item != tree2->item){
+        return 0;
+    }
+
+    int leftCheck = identical(tree1->left, tree2->left);
+    int rightCheck = identical(tree1->right, tree2->right);
+
+    if (leftCheck && rightCheck){
+        return 1;
+    }
+
+    return 0;
+
+}
 /////////////////////////////////////////////////////////////////////////////////
 
 BTNode *createBTNode(int item){
