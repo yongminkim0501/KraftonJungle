@@ -2,7 +2,7 @@
 
 /* CE1007/CZ1007 Data Structures
 Lab Test: Section E - Binary Trees Questions
-Purpose: Implementing the required functions for Question 2 */
+Purpose: Implementing the required functions for Question 3 */
 
 //////////////////////////////////////////////////////////////////////////////////
 
@@ -10,33 +10,36 @@ Purpose: Implementing the required functions for Question 2 */
 #include <stdlib.h>
 
 //////////////////////////////////////////////////////////////////////////////////
-typedef struct _btnode{
-	int item;
-	struct _btnode *left;
-	struct _btnode *right;
+typedef struct _btnode
+{
+    int item;
+    struct _btnode *left;
+    struct _btnode *right;
 } BTNode;   // You should not change the definition of BTNode
 
 /////////////////////////////////////////////////////////////////////////////////
 
-typedef struct _stackNode{
+typedef struct _stackNode
+{
     BTNode *btnode;
     struct _stackNode *next;
-}StackNode;
+} StackNode;
 
-typedef struct _stack{
+typedef struct _stack
+{
     StackNode *top;
-}Stack;
+} Stack;
 
 ///////////////////////// function prototypes ////////////////////////////////////
 
 // You should not change the prototypes of these functions
-int maxHeight(BTNode *node);
+int countOneChildNodes(BTNode *node);
 
 BTNode *createBTNode(int item);
 
 BTNode *createTree();
-void push( Stack *stk, BTNode *node);
-BTNode* pop(Stack *stk);
+void push( Stack *stack, BTNode *node);
+BTNode* pop(Stack *stack);
 
 void printTree(BTNode *node);
 void removeAll(BTNode **node);
@@ -45,20 +48,22 @@ void removeAll(BTNode **node);
 
 int main()
 {
-    int c;
     char e;
-	c = 1;
-
+    int c,s;
     BTNode *root;
+
+    c = 1;
     root = NULL;
 
+
     printf("1: Create a binary tree.\n");
-    printf("2: Find the maximum height of the binary tree.\n");
+    printf("2: Count the number of nodes that have exactly one child node.\n");
     printf("0: Quit;\n");
 
-    while(c != 0){
-        printf("\nPlease input your choice(1/2/0): ");
-        if(scanf("%d", &c) > 0)
+    while(c != 0)
+    {
+        printf("Please input your choice(1/2/0): ");
+        if( scanf("%d",&c) > 0)
         {
             switch(c)
             {
@@ -70,8 +75,8 @@ int main()
                 printf("\n");
                 break;
             case 2:
-                c = maxHeight(root);
-                printf("The maximum height of the binary tree is: %d\n",c);
+                s = countOneChildNodes(root);
+                printf("The number of nodes that have exactly one child node is: %d.\n", s);
                 removeAll(&root);
                 break;
             case 0:
@@ -81,28 +86,45 @@ int main()
                 printf("Choice unknown;\n");
                 break;
             }
-		}
+        }
         else
         {
             scanf("%c",&e);
         }
 
     }
-
     return 0;
 }
 
 //////////////////////////////////////////////////////////////////////////////////
 
-int maxHeight(BTNode *node)
+int countOneChildNodes(BTNode *node)
 
 {
-    /* add your code here */
+    BTNode *curNode = node;
+    int count;
+    if (!(curNode)) return 0;
+    if (!(curNode->left)&&!(curNode->right)){
+        return 0;
+    }else{
+        if((curNode->left)&&(curNode->right)){
+            count = countOneChildNodes(curNode->right);
+            count = countOneChildNodes(curNode->left);
+        }
+        else if (!(curNode->left)&&(curNode->right)){
+            count = countOneChildNodes(curNode->right)+1;
+        }
+        else if(!(curNode->right)&&(curNode->left)){
+            count = countOneChildNodes(curNode->left)+1;
+        }
+    }
+    return count;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
 
-BTNode *createBTNode(int item){
+BTNode *createBTNode(int item)
+{
     BTNode *newNode = malloc(sizeof(BTNode));
     newNode->item = item;
     newNode->left = NULL;
@@ -110,32 +132,31 @@ BTNode *createBTNode(int item){
     return newNode;
 }
 
-
 //////////////////////////////////////////////////////////////////////////////////
+
 
 BTNode *createTree()
 {
-    Stack stk;
+    Stack stack;
     BTNode *root, *temp;
     char s;
     int item;
 
-    stk.top = NULL;
+    stack.top = NULL;
     root = NULL;
-
     printf("Input an integer that you want to add to the binary tree. Any Alpha value will be treated as NULL.\n");
     printf("Enter an integer value for the root: ");
     if(scanf("%d",&item) > 0)
     {
         root = createBTNode(item);
-        push(&stk,root);
+        push(&stack,root);
     }
     else
     {
         scanf("%c",&s);
     }
 
-    while((temp =pop(&stk)) != NULL)
+    while((temp =pop(&stack)) != NULL)
     {
 
         printf("Enter an integer value for the Left child of %d: ", temp->item);
@@ -160,48 +181,54 @@ BTNode *createTree()
         }
 
         if(temp->right != NULL)
-            push(&stk,temp->right);
+            push(&stack,temp->right);
         if(temp->left != NULL)
-            push(&stk,temp->left);
+            push(&stack,temp->left);
     }
     return root;
 }
 
-void push( Stack *stk, BTNode *node){
+void push( Stack *stack, BTNode *node)
+{
     StackNode *temp;
 
     temp = malloc(sizeof(StackNode));
     if(temp == NULL)
         return;
     temp->btnode = node;
-    if(stk->top == NULL){
-        stk->top = temp;
+    if(stack->top == NULL)
+    {
+        stack->top = temp;
         temp->next = NULL;
     }
-    else{
-        temp->next = stk->top;
-        stk->top = temp;
+    else
+    {
+        temp->next = stack->top;
+        stack->top = temp;
     }
 }
 
-BTNode* pop(Stack *stk){
-   StackNode *temp, *top;
-   BTNode *ptr;
-   ptr = NULL;
+BTNode* pop(Stack *stack)
+{
+    StackNode *temp, *top;
+    BTNode *ptr;
+    ptr = NULL;
 
-   top = stk->top;
-   if(top != NULL){
+    top = stack->top;
+    if(top != NULL)
+    {
         temp = top->next;
         ptr = top->btnode;
 
-        stk->top = temp;
+        stack->top = temp;
         free(top);
         top = NULL;
-   }
-   return ptr;
+    }
+    return ptr;
 }
 
-void printTree(BTNode *node){
+void printTree(BTNode *node)
+{
     if(node == NULL) return;
 
     printTree(node->left);
@@ -209,11 +236,14 @@ void printTree(BTNode *node){
     printTree(node->right);
 }
 
-void removeAll(BTNode **node){
-    if(*node != NULL){
+void removeAll(BTNode **node)
+{
+    if(*node != NULL)
+    {
         removeAll(&((*node)->left));
         removeAll(&((*node)->right));
         free(*node);
         *node = NULL;
     }
 }
+
