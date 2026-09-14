@@ -2,7 +2,7 @@
 
 /* CE1007/CZ1007 Data Structures
 Lab Test: Section E - Binary Trees Questions
-Purpose: Implementing the required functions for Question 5 */
+Purpose: Implementing the required functions for Question 8 */
 
 //////////////////////////////////////////////////////////////////////////////////
 
@@ -35,7 +35,7 @@ typedef struct _stack
 ///////////////////////// Function prototypes ////////////////////////////////////
 
 // You should not change the prototypes of these functions
-void mirrorTree(BTNode *node);
+int hasGreatGrandchild(BTNode *node);
 
 BTNode *createBTNode(int item);
 
@@ -51,15 +51,14 @@ void removeAll(BTNode **node);
 int main()
 {
     char e;
-    int c;
+    int c,value;
     BTNode *root;
 
     c = 1;
     root = NULL;
 
-
     printf("1: Create a binary tree.\n");
-    printf("2: Mirror the binary tree.\n");
+    printf("2: Find the great grandchildren of the binary tree.\n");
     printf("0: Quit;\n");
 
 
@@ -78,10 +77,8 @@ int main()
                 printf("\n");
                 break;
             case 2:
-                mirrorTree(root);
-                printf("Mirror binary tree is: ");
-                printTree(root);
-                printf("\n");
+                printf("\nThe values stored in all nodes of the tree that has at least one great-grandchild are: ");
+                hasGreatGrandchild(root);
                 removeAll(&root);
                 break;
             case 0:
@@ -103,7 +100,7 @@ int main()
 
 //////////////////////////////////////////////////////////////////////////////////
 
-void mirrorTree(BTNode *node)
+int hasGreatGrandchild(BTNode *node)
 {
 	/* add your code here */
 }
