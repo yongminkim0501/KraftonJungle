@@ -2,7 +2,7 @@
 
 /* CE1007/CZ1007 Data Structures
 Lab Test: Section E - Binary Trees Questions
-Purpose: Implementing the required functions for Question 4 */
+Purpose: Implementing the required functions for Question 5 */
 
 //////////////////////////////////////////////////////////////////////////////////
 
@@ -35,7 +35,7 @@ typedef struct _stack
 ///////////////////////// Function prototypes ////////////////////////////////////
 
 // You should not change the prototypes of these functions
-int sumOfOddNodes(BTNode *root);
+void mirrorTree(BTNode *node);
 
 BTNode *createBTNode(int item);
 
@@ -51,16 +51,17 @@ void removeAll(BTNode **node);
 int main()
 {
     char e;
-    int c,oddValueCount;
+    int c;
     BTNode *root;
 
     c = 1;
-    oddValueCount = 0;
     root = NULL;
 
+
     printf("1: Create a binary tree.\n");
-    printf("2: Find the sum of all odd numbers in the binary tree.\n");
+    printf("2: Mirror the binary tree.\n");
     printf("0: Quit;\n");
+
 
     while(c != 0)
     {
@@ -77,8 +78,10 @@ int main()
                 printf("\n");
                 break;
             case 2:
-                oddValueCount = sumOfOddNodes(root);
-                printf("The sum of all odd numbers in the binary tree is: %d.\n",oddValueCount);
+                mirrorTree(root);
+                printf("Mirror binary tree is: ");
+                printTree(root);
+                printf("\n");
                 removeAll(&root);
                 break;
             case 0:
@@ -100,10 +103,9 @@ int main()
 
 //////////////////////////////////////////////////////////////////////////////////
 
-int sumOfOddNodes(BTNode *node)
-
+void mirrorTree(BTNode *node)
 {
-    /* add your code here */
+	/* add your code here */
 }
 
 //////////////////////////////////////////////////////////////////////////////////
