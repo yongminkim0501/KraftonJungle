@@ -93,8 +93,40 @@ int main()
 
 void levelOrderTraversal(BSTNode* root)
 {
+	// 위 -> 아래
+	// 각 레벨 안에서는 왼쪽 -> 오른쪽, BFS문제
+	Queue *q = malloc(sizeof(Queue));
+	BSTNode *curNode = root;
+	QueueNode *curQueueNode = malloc(sizeof(Queue));
+	
+	// curQueueNode->data = root;
+	// curQueueNode->nextPtr = NULL;
 
-    /* add your code here */
+	// q->head = curQueueNode;
+	// q->tail = curQueueNode;
+
+	q->head = NULL;
+	q->tail = NULL;
+
+	enqueue(&(q->head), &(q->tail), root);
+
+	while(q){
+		curNode = dequeue(&(q->head), &(q->tail));
+		printf("%d", (curNode->item));
+		if((curNode->left)&&!(curNode->right)){
+			enqueue(&(q->head), &(q->tail), root);
+			curNode=curNode->left;
+		}
+		if((curNode->right)&&!(curNode->left)){
+			enqueue(&(q->head), &(q->tail), root);
+			curNode=curNode->right;
+		}
+		if((curNode->right)&&(curNode->left)){
+			enqueue(&(q->head), &(q->tail), root);
+			enqueue(&(q->head), &(q->tail), root);
+		}
+	}
+
 }
 
 ///////////////////////////////////////////////////////////////////////////////
