@@ -41,6 +41,8 @@
 #include <string.h>
 
 #define MAX_LINES 8
+char *parts[MAX_LINES];
+
 typedef struct {
     char **lines;    /* 줄 포인터들의 '배열'을 가리킨다 */
     int    count;
@@ -52,14 +54,14 @@ static void view_set(LineView *out, char **arr, int n) {
     out->count = n;
 }
 
-static void split_lines(LineView *out, char *text) {
-    char *parts[MAX_LINES];              
+static void split_lines(LineView *out, char *text) {              
     int n = 0;
     /* strtok는 새로 할당하지 않고, 넘겨받은 문자열 내부의 주소를 돌려준다. 
     * 따라서, strtok은 원본 버퍼를 제자리에서 수정한다. 
     */
     for (char *ln = strtok(text, "\n"); ln && n < MAX_LINES; ln = strtok(NULL, "\n"))
         parts[n++] = ln;
+
 
     view_set(out, parts, n);      
 
