@@ -184,8 +184,8 @@ void place(void* bp, size_t size){
    
    if ((origin_size-size) < 2*DSIZE) // 여기 Segment Fault 발생 #1
    {
-    PUT(HDRP(bp), PACK(size, 1));
-    PUT(FTRP(bp), PACK(size, 1));
+    PUT(HDRP(bp), PACK(origin_size, 1));
+    PUT(FTRP(bp), PACK(origin_size, 1));
    }
    else
    {
@@ -242,18 +242,63 @@ void mm_free(void *ptr)
  */
 void *mm_realloc(void *ptr, size_t size)
 {
-    void *oldptr = ptr;
-    void *newptr;
-    size_t copySize;
+    /* 0단계: 특수한 경우 */
+    if (ptr == NULL)
+        return mm_malloc(size);
+    if (size == 0) {
+        mm_free(ptr);
+        return NULL;
+    }
 
-    newptr = mm_malloc(size);
+    size_t asize;
+    if (size <= DSIZE)
+        asize = 2 * DSIZE;
+    else
+        asize = DSIZE * ((size + DSIZE + (DSIZE - 1)) / DSIZE);
 
+    size_t old_size   = GET_SIZE(HDRP(ptr));
+    void  *prev_bp    = PREV_BLKP(ptr);
+    void  *next_bp    = NEXT_BLKP(ptr);
+    size_t prev_alloc = GET_ALLOC(HDRP(prev_bp));
+    size_t next_alloc = GET_ALLOC(HDRP(next_bp));
+    size_t prev_size  = GET_SIZE(HDRP(prev_bp));
+    size_t next_size  = GET_SIZE(HDRP(next_bp));
+
+    /* 3단계: 기존 블록으로 충분 → 그대로 반환 */
+    if (old_size >= asize)
+        return ptr;
+
+    /* 4단계: 다음 블록과 합치면 충분 → 주소 그대로, 데이터 이동 없음 */
+    if (!next_alloc && old_size + next_size >= asize) {
+        size_t total = old_size + next_size;
+        PUT(HDRP(ptr), PACK(total, 1));
+        PUT(FTRP(ptr), PACK(total, 1));   // 헤더를 먼저 썼으니 합친 블록의 끝
+        return ptr;
+    }
+
+    /* 5단계: 앞 블록(+ 가능하면 뒤 블록)과 합치면 충분 → 데이터를 앞으로 이동 */
+    if (!prev_alloc) {
+        size_t total = prev_size + old_size;
+        if (!next_alloc)
+            total += next_size;
+
+        if (total >= asize) {
+            memmove(prev_bp, ptr, old_size - DSIZE);   // 데이터 먼저 이동
+            PUT(HDRP(prev_bp), PACK(total, 1));        // 그다음 경계 태그
+            PUT(FTRP(prev_bp), PACK(total, 1));
+            return prev_bp;
+        }
+    }
+
+    /* 6단계: 어느 것도 안 됨 → 새로 할당, 복사, 해제 */
+    void *newptr = mm_malloc(size);
     if (newptr == NULL)
         return NULL;
-    copySize = *(size_t *)((char *)oldptr - SIZE_T_SIZE);
+
+    size_t copySize = old_size - DSIZE;   // 기존 payload 크기
     if (size < copySize)
         copySize = size;
-    memcpy(newptr, oldptr, copySize);
-    mm_free(oldptr);
+    memcpy(newptr, ptr, copySize);
+    mm_free(ptr);
     return newptr;
 }
