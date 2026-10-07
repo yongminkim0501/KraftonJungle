@@ -73,12 +73,14 @@ static void *find_fit(size_t asize);
 static void place(void *bp, size_t asize);
 static void insert_free_block(void *bp);
 static void remove_free_block(void *bp);
+
 /* 가용 블록 bp를 리스트 맨 앞에 삽입 (LIFO) */
 static void insert_free_block(void *bp)
 {
+
     PRED(bp) = NULL;              // 맨 앞이므로 이전 블록 없음
     SUCC(bp) = free_listp;        // 기존 첫 블록을 다음으로
-
+    
     if (free_listp != NULL)       // 리스트가 비어 있지 않으면
         PRED(free_listp) = bp;    // 기존 첫 블록의 이전을 bp로
 
@@ -181,6 +183,7 @@ void* extend_heap(size_t words){
 
     return coleasce(bp); // 미구현 함수로 구현해야함
 }
+#include <limits.h>
 
 void* find_fit(size_t size){
     // for문의 시작 주소로 heap의 프롤로그 블록 bp사용
@@ -190,48 +193,64 @@ void* find_fit(size_t size){
         return NULL;
     }
     void *bp;
+    void *diff_bp; 
+    size_t cur_size;
+    size_t diff_size = INT_MAX; 
     // 이 부분을 
     for (bp = free_listp; bp != NULL; bp = SUCC(bp)){
-        if (GET_SIZE(HDRP(bp))>=size){
-            return bp;
+        cur_size = GET_SIZE(HDRP(bp));
+        if (cur_size>=size){
+            if (diff_size > cur_size - size){
+                diff_bp = bp;
+                diff_size = cur_size - size;
+            }
         }
+    }
+    if (diff_size != INT_MAX){
+        return diff_bp;
     }
     return NULL;
 }
+#define THRESHOLD 100
 
-void place(void* bp, size_t size){
-    /*
-    요청한 블록을 가용 블록의 시작 부분에 배치해야 함
-    나머지 부분의 크기가 최소 블록 크기와 같거나 큰 경우에만 분할
+static void *place_impl(void *bp, size_t size)
+{
+    size_t origin_size = GET_SIZE(HDRP(bp));
+    remove_free_block(bp);
 
-    place는 mm_malloc이 블록을 할당하는 과정에서 호출
-    사용자가 malloc(size)를 요청하면 mm_malloc은 먼저 요청 크기를 정렬과
-    오버헤드(헤더, 푸터)를 반영한 asize로 조정
+    if ((origin_size - size) < MIN_BLOCK_SIZE)
+    {
+        PUT(HDRP(bp), PACK(origin_size, 1));
+        PUT(FTRP(bp), PACK(origin_size, 1));
+        return bp;
+    }
+    else if (size >= THRESHOLD)
+    {
+        PUT(HDRP(bp), PACK(origin_size - size, 0));
+        PUT(FTRP(bp), PACK(origin_size - size, 0));
+        insert_free_block(bp);
 
-    예를 들어 사용자 데이터 필요로 하는 것이 30 바이트라면
-    30 + 4(헤더) + 4(풋터) => 38 => 8의 배수 -> 40바이트
+        bp = NEXT_BLKP(bp);
+        PUT(HDRP(bp), PACK(size, 1));
+        PUT(FTRP(bp), PACK(size, 1));
+        return bp;
+    }
+    else
+    {
+        PUT(HDRP(bp), PACK(size, 1));
+        PUT(FTRP(bp), PACK(size, 1));
 
-    전체 64바이트가 존재한다고 하면 앞에 40바이트를 이러한 공간으로 할당한 후
-    뒤의 빈 공간 24 바이트 할당 헤더 4바이트, 페이로드 16바이트, 풋터 4바이트 -> 24바이트
-    */
-   size_t origin_size = GET_SIZE(HDRP(bp));
-   remove_free_block(bp);
-
-   if ((origin_size-size) < MIN_BLOCK_SIZE) // 여기 Segment Fault 발생 #1
-   {
-    PUT(HDRP(bp), PACK(origin_size, 1));
-    PUT(FTRP(bp), PACK(origin_size, 1));
-   }
-   else
-   {
-    PUT(HDRP(bp), PACK(size, 1));
-    PUT(FTRP(bp), PACK(size, 1));
-
-    PUT(HDRP(NEXT_BLKP(bp)), PACK(origin_size - size, 0));
-    PUT(FTRP(NEXT_BLKP(bp)), PACK(origin_size - size, 0));
-    insert_free_block(NEXT_BLKP(bp));
-   }
+        PUT(HDRP(NEXT_BLKP(bp)), PACK(origin_size - size, 0));
+        PUT(FTRP(NEXT_BLKP(bp)), PACK(origin_size - size, 0));
+        insert_free_block(NEXT_BLKP(bp));
+        return bp;
+    }
 }
+
+// void place(void* bp, size_t size){
+//     bp = place_impl(bp, size);
+// }
+#define place(bp, size) ((bp) = place_impl((bp), (size)))
 
 void *mm_malloc(size_t size)
 {
@@ -332,6 +351,9 @@ void *mm_realloc(void *ptr, size_t size)
             PUT(FTRP(prev_bp), PACK(total, 1));
             return prev_bp;
         }
+    }
+    if (next_size == 0 || (!next_alloc && GET_SIZE(HDRP(NEXT_BLKP(next_bp))) == 0)){
+
     }
 
     /* 6단계: 어느 것도 안 됨 → 새로 할당, 복사, 해제 */
